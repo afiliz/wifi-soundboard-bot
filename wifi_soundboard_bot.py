@@ -1,43 +1,54 @@
 import discord
+import nacl
+from discord.ext import commands
+from stayin_alive import keep_alive
 import os
 
 '''
 Wi-Fi Tree Discord Bot
 
 This bot is designed for users of the Discord server "The Wi-Fi Tree". The bot's function is to play short sound clips on command when in a voice channel. The bot will join the caller's voice channel, play the selected clip, and leave the voice channel.
-
-Commands:
-- play [selection]: Bot joins the caller's voice channel and plays a clip selection. "selection" can either be a specific clip name, or an option such as "random" to play a random clip.
-- stop: Bot stops playing any sound clip currently being played.
-- upload-clip [file attachment]: Uploads clip to the drive where the bot's sound clip repository is
-- help: Displays info on bot functionality and commands
-
-Optional/Future Commands:
-- Pause: Bot pauses current sound clip. If play is used after pause, previous clip's progress will be overwritten
-- Resume: Bot resumes current sound clip. If play is used after pause, previous clip's progress will be overwritten
 '''
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='$')
+secret_token = os.environ['TOKEN']
 
-@client.event
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print('We have logged in as {0.user}'.format(bot))
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.command()
+async def join(ctx, timeout=30.0, reconnect=False):
+  if not ctx.message.author.voice:
+    await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
+    return
+  else:
+    channel = ctx.message.author.voice.channel
+  await channel.connect()
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-@client.event()
-async def connect(ctx, timeout=30.0, reconnect=False):
-    channel = ctx.author.voice.channel
-    await channel.connect()
-
-@client.event()
+@bot.command()
 async def leave(ctx):
-    await ctx.voice_client.disconnect()
+  voice_client = ctx.message.guild.voice_client
+  if voice_client.is_connected():
+    await voice_client.disconnect()
+  else:
+    await ctx.send("The bot is not connected to a voice channel.")
 
-client.run(os.getenv('TOKEN'))
+@bot.command(name='play', help='Plays the specified clip')
+async def play(ctx):
+  # try:
+  #   server = ctx.message.guild
+  #   voice_channel = server.voice_client
+
+  #   async with ctx.typing():
+      
+  # # await ctx.channel.send('Playing clip')
+  pass
+
+
+@bot.command()
+async def ping(ctx):
+  await ctx.channel.send("pong")
+
+# keep_alive() # run flask server to keep bot alive
+bot.run(secret_token)
