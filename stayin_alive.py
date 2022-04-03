@@ -3,6 +3,8 @@ from threading import Thread
 
 app = Flask('')
 
+# put list of clips here
+
 @app.route('/')
 def home():
     return "Hello. I am alive!"

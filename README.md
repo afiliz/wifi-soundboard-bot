@@ -10,7 +10,7 @@ This bot is designed for users of the Discord server "The Wi-Fi Tree". The bot's
 ## Commands:
 - play [selection]: Bot joins the caller's voice channel and plays a clip selection. "selection" can either be a specific clip name, or an option such as "random" to play a random clip.
 - stop: Bot stops playing any sound clip currently being played.
-- upload-clip [file attachment]: Uploads clip to the drive where the bot's sound clip repository is
+- upload [file attachment]: Uploads clip to the drive where the bot's sound clip repository is
 - help: Displays info on bot functionality and commands
 
 ## Optional/Future Commands:
